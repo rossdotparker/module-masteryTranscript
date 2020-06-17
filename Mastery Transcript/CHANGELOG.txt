@@ -1,5 +1,29 @@
 CHANGELOG
 =========
+
+v1.3.00
+-------
+Added ability to track issues transcripts
+
+v1.2.02
+-------
+Manage Journey filter persistence
+
+v1.2.01
+-------
+Prevent delete of Complete - Approved
+Improved stats in Manage and Record Journey
+
+v1.2.00
+-------
+Improved Record Journey table
+Credit description character limit
+Student total Complete - Approved count
+
+v1.1.03
+-------
+Improved Manage Journey indication of Foundational/Advanced
+
 v1.1.02
 -------
 Improved Manage Journey filters

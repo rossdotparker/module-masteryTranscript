@@ -20,17 +20,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Forms\Form;
 use Gibbon\Forms\DatabaseFormFactory;
 use Gibbon\Domain\System\DiscussionGateway;
-use Gibbon\Module\MasteryTranscript\Domain\JourneyGateway;
+use Gibbon\Module\MasteryTranscript\Domain\TranscriptGateway;
 use Gibbon\FileUploader;
 use Gibbon\View\View;
 
-if (isActionAccessible($guid, $connection2, '/modules/Mastery Transcript/journey_record_edit.php') == false) {
+if (isActionAccessible($guid, $connection2, '/modules/Mastery Transcript/transcripts_manage_edit.php') == false) {
     // Access denied
     $page->addError(__('You do not have access to this action.'));
 } else {
     // Proceed!
-    $masteryTranscriptJourneyID = $_GET['masteryTranscriptJourneyID'] ?? '';
-    $search = $_GET['search'] ?? '';
+    $masteryTranscriptTranscriptID = $_GET['masteryTranscriptTranscriptID'] ?? '';
 
     $page->breadcrumbs
         ->add(__m('Record Journey'), 'journey_record.php');
@@ -39,12 +38,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Mastery Transcript/journey
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-    if (empty($masteryTranscriptJourneyID)) {
+    if (empty($masteryTranscriptTranscriptID)) {
         $page->addError(__('You have not specified one or more required parameters.'));
         return;
     }
 
-    $result = $container->get(JourneyGateway::class)->selectJourneyByID($masteryTranscriptJourneyID);
+    $result = $container->get(TranscriptGateway::class)->selectJourneyByID($masteryTranscriptTranscriptID);
 
     if ($result->rowCount() != 1) {
         $page->addError(__('The specified record cannot be found.'));
@@ -56,12 +55,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Mastery Transcript/journey
     $page->breadcrumbs
         ->add($values['name']." (".$values['status'].")");
 
-    if ($search !='') {
-        echo "<div class='linkTop'>";
-        echo "<a href='".$_SESSION[$guid]['absoluteURL']."/index.php?q=/modules/Mastery Transcript/journey_record.php&search=$search'>".('Back to Search Results')."</a>";
-        echo "</div>";
-    }
-
     if ($values['status'] == 'Current - Pending') {
         $page->addWarning(__m('This journey is pending mentor agreement, and so cannot be edited at this time.'));
         return;
@@ -69,7 +62,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Mastery Transcript/journey
 
     //Render log
     $discussionGateway = $container->get(DiscussionGateway::class);
-    $logs = $discussionGateway->selectDiscussionByContext('masteryTranscriptJourney', $masteryTranscriptJourneyID);
+    $logs = $discussionGateway->selectDiscussionByContext('masteryTranscriptTranscript', $masteryTranscriptTranscriptID);
     if ($logs->rowCount() < 1) {
         $page->addMessage(__m('The conversation has not yet begun.'), 'warning');
     }
@@ -90,7 +83,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Mastery Transcript/journey
     //New log form
     if ($values['status'] != 'Current - Pending') {
         echo "<h2>".__m('New Entry')."</h2>";
-        $form = Form::create('log', $gibbon->session->get('absoluteURL').'/modules/'.$gibbon->session->get('module')."/journey_record_editProcess.php?masteryTranscriptJourneyID=$masteryTranscriptJourneyID&search=$search");
+        $form = Form::create('log', $gibbon->session->get('absoluteURL').'/modules/'.$gibbon->session->get('module')."/journey_record_editProcess.php?masteryTranscriptTranscriptID=$masteryTranscriptTranscriptID");
         $form->setFactory(DatabaseFormFactory::create($pdo));
 
         $form->addHiddenValue('address', $gibbon->session->get('address'));
